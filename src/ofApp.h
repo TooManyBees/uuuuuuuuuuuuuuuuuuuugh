@@ -37,6 +37,7 @@ class ofApp : public ofBaseApp{
 
 		void drawNoise();
 		ofShader noiseShader;
+		ofShader noiseShader2;
 
 		ofxImageSequenceRecorder recorder;
 		bool recording = false;

@@ -43,5 +43,8 @@
     <None Include="bin\data\no.frag">
       <Filter>src\shaders</Filter>
     </None>
+    <None Include="bin\data\no2.frag">
+      <Filter>src\shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
