@@ -172,7 +172,7 @@ vec3 rgb2hsl(vec3 c){
         }
         h = h / 6.0;
     }
-    return vec3( h, s, l );
+    return vec3( h, s, abs(l) );
 }
 vec3 hsl2rgb(vec3 c)
 {
