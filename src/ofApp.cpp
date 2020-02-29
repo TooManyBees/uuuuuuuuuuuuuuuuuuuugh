@@ -41,19 +41,23 @@ void ofApp::drawWires() {
 	wires.drawAround(focus, 2000);
 }
 
-//--------------------------------------------------------------
-void ofApp::draw(){
-	//canvas.begin();
-	    //drawWires();
-		ofBackground(0);
-		noiseShader.begin();
+void ofApp::drawNoise() {
+	ofBackground(0);
+	noiseShader.begin();
 		noiseShader.setUniform1i("frameNumber", ofGetFrameNum());
 		noiseShader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
 		noiseShader.setUniform1f("timetime", ofGetElapsedTimeMillis());
 		ofSetColor(255);
 		//ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
 		depthFrame.draw(0, 0);
-		noiseShader.end();
+	noiseShader.end();
+}
+
+//--------------------------------------------------------------
+void ofApp::draw(){
+	//canvas.begin();
+	    //drawWires();
+		drawNoise();
 	//canvas.end();
 	//ofSetColor(255);
 	//canvas.draw(0, 0);

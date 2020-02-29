@@ -205,12 +205,12 @@ vec3 adjustHsl(vec3 rgb, vec3 shift) {
 }
 
 void main() {
-    vec4 something = texture(tex0, texCoordVarying);
+    vec4 drawMask = texture(tex0, texCoordVarying);
     float time = ((float(frameNumber) / 10.0) + 1.) / 25.;
     vec2 uv = (gl_FragCoord.xy/resolution.xy - 0.5) * vec2(resolution.x / resolution.y, 1);
     // vec2 uv = gl_FragCoord.xy / resolution.xy / 2;
     vec3 pos = vec3(uv, time);
-    vec3 turb = turbulence(pos, something.r);
+    vec3 turb = turbulence(pos, drawMask.r);
     vec3 c = naiveHueShift(vec3(-1.4654, 2.9033, 0), turb.r);
     c = adjustHsl(vec3(uv, time), c);
     float g = hsl2rgb(c).g;

@@ -35,8 +35,8 @@ class ofApp : public ofBaseApp{
 		Wires wires;
 		void drawWires();
 
+		void drawNoise();
 		ofShader noiseShader;
-
 
 		ofxImageSequenceRecorder recorder;
 		bool recording = false;
