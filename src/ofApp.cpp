@@ -1,5 +1,7 @@
 #include "ofApp.h"
 
+const string SHADER_NAME = "no.frag";
+
 //--------------------------------------------------------------
 void ofApp::setup(){
 	focus = glm::vec2(ofGetWidth() / 2, ofGetHeight()/2);
@@ -10,8 +12,8 @@ void ofApp::setup(){
 	//ofAddListener(recorder.outputFileCompleteEvent, this, )
 	canvas.allocate(ofGetWidth(), ofGetHeight(), GL_RGB);
 
-	noiseShader.load("identity.vert", "no.frag");
-	noiseShader2.load("identity.vert", "no2.frag");
+	noiseShader.load("identity.vert", SHADER_NAME);
+	//noiseShader2.load("identity.vert", "no2.frag");
 
 	oniManager.setup(640, 480, 30);
 	depthFrame.allocate(640, 480, OF_IMAGE_GRAYSCALE);
@@ -20,8 +22,8 @@ void ofApp::setup(){
 void ofApp::reloadShaders() {
 	if (shadersDirty) {
 		ofLogNotice() << "Reloading shader." << endl;
-		noiseShader.load("identity.vert", "no.frag");
-		noiseShader2.load("identity.vert", "no2.frag");
+		noiseShader.load("identity.vert", SHADER_NAME);
+		//noiseShader2.load("identity.vert", "no2.frag");
 		GLint err = glGetError();
 		if (err != GL_NO_ERROR) {
 			ofLogNotice() << "Shader failed to compile:" << endl << err << endl;
@@ -51,7 +53,7 @@ void ofApp::drawNoise() {
 		noiseShader.setUniform1f("timetime", ofGetElapsedTimeMillis());
 		ofSetColor(255);
 		//ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-		depthFrame.draw(0, 0);
+		depthFrame.draw(0, 0, ofGetWidth(), ofGetHeight());
 	noiseShader.end();
 }
 
