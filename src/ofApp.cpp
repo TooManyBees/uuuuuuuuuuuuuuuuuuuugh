@@ -42,7 +42,15 @@ void ofApp::update(){
 void ofApp::drawWires() {
 	ofBackgroundGradient(ofColor(200, 120, 0), ofColor::black, OF_GRADIENT_CIRCULAR);
 	ofSetColor(0);
-	wires.drawAround(focus, 2000);
+	//wires.drawAround(focus, 2000);
+	auto positions = oniManager.getUserData();
+	positions.push_back(focus);
+	//cout << "[ ";
+	//for (auto &pos : positions) {
+	//	cout << "(" << pos << ") ";
+	//}
+	//cout << "]" << endl;
+	wires.drawAroundMulti(positions, 2000);
 }
 
 void ofApp::drawNoise() {

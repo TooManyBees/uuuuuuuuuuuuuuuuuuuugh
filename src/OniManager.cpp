@@ -175,3 +175,20 @@ void OniManager::getUserFrame(ofImage* image) {
 		image->setFromPixels(pixels);
 	}
 }
+
+vector<glm::vec2>& OniManager::getUserData() {
+	if (userFrame.isValid()) {
+		auto &data = userFrame.getUsers();
+		userPositions.clear();
+		float x, y, z;
+		for (size_t i = 0; i < data.getSize(); i++) {
+			if (!data[i].isVisible()) continue;
+			nite::Point3f pos = data[i].getCenterOfMass();
+			openni::Status res = openni::CoordinateConverter::convertWorldToDepth(depthStream, pos.x, pos.y, pos.z, &x, &y, &z);
+			if (res == openni::STATUS_OK) {
+				userPositions.emplace_back(x, y);
+			}
+		}
+	}
+	return userPositions;
+}

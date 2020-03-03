@@ -15,12 +15,15 @@ public:
 	void getDepthFrame(ofImage* image);
 	void getUserMask(bool *users);
 	void getUserFrame(ofImage* image);
+	vector<glm::vec2>& getUserData();
 
 private:
 	openni::Device device;
 	openni::VideoStream depthStream;
 	openni::VideoStream colorStream;
 	openni::VideoFrameRef colorFrame;
+
+	vector<glm::vec2> userPositions;
 
 	//void updateColorFrame();
 	//uint64_t colorFrameTimestamp;
