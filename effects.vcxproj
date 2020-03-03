@@ -183,6 +183,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ofApp.cpp" />
     <ClCompile Include="src\OniManager.cpp" />
+    <ClCompile Include="src\wires.cpp" />
     <ClCompile Include="src\wires.h" />
   </ItemGroup>
   <ItemGroup>

@@ -7,10 +7,13 @@
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\wires.h">
+    <ClCompile Include="src\OniManager.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\OniManager.cpp">
+    <ClCompile Include="src\wires.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\wires.h">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
