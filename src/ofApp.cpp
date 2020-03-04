@@ -15,8 +15,8 @@ void ofApp::setup(){
 	noiseShader.load("identity.vert", SHADER_NAME);
 	//noiseShader2.load("identity.vert", "no2.frag");
 
-	oniManager.setup(640, 480, 30);
-	depthFrame.allocate(640, 480, OF_IMAGE_GRAYSCALE);
+	oniManager.setup(WIDTH, HEIGHT, FPS);
+	depthFrame.allocate(WIDTH, HEIGHT, OF_IMAGE_GRAYSCALE);
 }
 
 void ofApp::reloadShaders() {
@@ -37,6 +37,7 @@ void ofApp::update(){
 	focus = glm::vec2(ofGetMouseX(), ofGetMouseY());
 	oniManager.getDepthFrame(&depthFrame);
 	reloadShaders();
+	if (needsResize) sizeProjectionSpace();
 }
 
 void ofApp::drawWires() {
@@ -57,22 +58,22 @@ void ofApp::drawNoise() {
 	ofBackground(0);
 	noiseShader.begin();
 		noiseShader.setUniform1i("frameNumber", ofGetFrameNum());
-		noiseShader.setUniform2f("resolution", ofGetWidth(), ofGetHeight());
+		noiseShader.setUniform2f("resolution", WIDTH, HEIGHT);
 		noiseShader.setUniform1f("timetime", ofGetElapsedTimeMillis());
 		ofSetColor(255);
-		//ofDrawRectangle(0, 0, ofGetWidth(), ofGetHeight());
-		depthFrame.draw(0, 0, ofGetWidth(), ofGetHeight());
+		//ofDrawRectangle(canvasSpace);
+		depthFrame.draw(canvasSpace);
 	noiseShader.end();
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-	//canvas.begin();
+	canvas.begin();
 	    //drawWires();
 		drawNoise();
-	//canvas.end();
+	canvas.end();
 	//ofSetColor(255);
-	//canvas.draw(0, 0);
+	canvas.draw(projectionSpace);
 
 	if (recording) {
 		ofPixels px;
@@ -98,6 +99,9 @@ void ofApp::keyReleased(int key){
 			recorder.stopThread();
 		}
 		recording = !recording;
+	}
+	if (key == 'f') {
+		ofToggleFullscreen();
 	}
 	if (key == ' ') {
 		shadersDirty = true;
@@ -136,7 +140,7 @@ void ofApp::mouseExited(int x, int y){
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
-
+	needsResize = true;
 }
 
 //--------------------------------------------------------------
@@ -147,4 +151,13 @@ void ofApp::gotMessage(ofMessage msg){
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
+}
+
+void ofApp::sizeProjectionSpace() {
+	ofRectangle window = ofGetWindowRect();
+	if (window.width > 0 && window.height > 0) {
+		projectionSpace.scaleTo(window, OF_SCALEMODE_FIT);
+		projectionSpace.alignTo(window, OF_ALIGN_HORZ_CENTER, OF_ALIGN_VERT_CENTER);
+	}
+	needsResize = false;
 }

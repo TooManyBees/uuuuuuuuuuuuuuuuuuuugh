@@ -28,6 +28,10 @@ class ofApp : public ofBaseApp{
 		void reloadShaders();
 		bool shadersDirty = false;
 
+		static const int WIDTH = 640;
+		static const int HEIGHT = 480;
+		static const int FPS = 30;
+
 		OniManager oniManager;
 		ofImage depthFrame;
 
@@ -42,4 +46,8 @@ class ofApp : public ofBaseApp{
 		ofxImageSequenceRecorder recorder;
 		bool recording = false;
 		ofFbo canvas;
+		ofRectangle canvasSpace = ofRectangle(0, 0, WIDTH, HEIGHT);
+		ofRectangle projectionSpace = ofRectangle(0, 0, WIDTH, HEIGHT);
+		void sizeProjectionSpace();
+		bool needsResize = true;
 };
