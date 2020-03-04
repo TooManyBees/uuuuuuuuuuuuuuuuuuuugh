@@ -26,7 +26,7 @@ void Wires::drawAround(glm::vec2 focus, size_t n) {
 	}
 }
 
-void Wires::drawAroundMulti(vector<glm::vec2> &const focuses, size_t n) {
+void Wires::drawAroundMulti(vector<glm::vec2>& focuses, size_t n) {
 	for (size_t i = 0; i < n; i++) {
 		glm::vec2 p(ofRandomWidth(), ofRandomHeight());
 		glm::vec2 slope = p * focuses.size();
