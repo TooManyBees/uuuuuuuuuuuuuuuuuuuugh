@@ -141,6 +141,24 @@ vec3 turbulence(vec3 pos, float mystery) {
     return v;
 }
 
+float turbulence1D(vec3 pos, float mystery) {
+    int octaves = 8;
+    float lucanarity = 2.0;
+    float gain = 0.5 * mystery;
+    float scale = 0.5;
+
+    float v = 0.0;
+
+    for (int i = 0; i < octaves; i++) {
+        float octave = float(i * 2);
+
+        vec3 newPos = pos * pow(lucanarity, octave) * mystery + vec3(-120.34, +340.21, -13.67);
+        v += scale * pow(gain, octave) * abs(simplex3D(newPos));
+    }
+
+    return v;
+}
+
 vec3 vmix3(vec3 a, vec3 b, vec3 v) {
     return vec3(
         mix(a.r, b.r, v.r),
@@ -197,8 +215,8 @@ vec3 adjustHsl(vec3 rgb, vec3 shift) {
 
 const vec3 squaredBase = vec3(0.1282, 1.6649, 0.9679) * vec3(0.1282, 1.6649, 0.9679);
 float toGradient(vec3 pos, float aux) {
-    vec3 lerp = vmix3(pos, vec3(-2.1308, 1.9, 0.2912), pos);
-    // vec3 lerp = vmix3(pos, turbulence(pos, aux), pos);
+    // vec3 lerp = vmix3(pos, vec3(-2.1308, 1.9, 0.2912), pos);
+    vec3 lerp = vmix3(pos, vec3(turbulence1D(pos, aux)), pos); // 3D turbulence here is enormous perf drain for barely any visual diff
     vec3 rgb = adjustHsl(squaredBase, lerp);
     float blue = hsl2rgb(rgb).b;
     return cos(blue);
