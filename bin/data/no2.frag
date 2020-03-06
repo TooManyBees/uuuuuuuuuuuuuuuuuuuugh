@@ -141,18 +141,18 @@ vec3 turbulence(vec3 pos, float mystery) {
     return v;
 }
 
-float turbulence1D(vec3 pos, float mystery) {
+float turbulence1D(vec3 pos, float depth, float time) {
     int octaves = 8;
     float lucanarity = 2.0;
-    float gain = 0.5 * mystery;
+    float gain = 0.5;
     float scale = 0.5;
 
     float v = 0.0;
 
     for (int i = 0; i < octaves; i++) {
-        float octave = float(i * 2);
+        float octave = float(i * 2) * (1 - depth);
 
-        vec3 newPos = pos * pow(lucanarity, octave) * mystery + vec3(-120.34, +340.21, -13.67);
+        vec3 newPos = pos * pow(lucanarity, octave) + vec3(-120.34, +340.21, -13.67) * time;
         v += scale * pow(gain, octave) * abs(simplex3D(newPos));
     }
 
@@ -214,39 +214,39 @@ vec3 adjustHsl(vec3 rgb, vec3 shift) {
 }
 
 const vec3 squaredBase = vec3(0.1282, 1.6649, 0.9679) * vec3(0.1282, 1.6649, 0.9679);
-float toGradient(vec3 pos, float aux) {
+float toGradient(vec3 pos, float depth, float time) {
     // vec3 lerp = vmix3(pos, vec3(-2.1308, 1.9, 0.2912), pos);
-    vec3 lerp = vmix3(pos, vec3(turbulence1D(pos, aux)), pos); // 3D turbulence here is enormous perf drain for barely any visual diff
+    vec3 lerp = vmix3(pos, vec3(turbulence1D(pos, depth, time)), pos); // 3D turbulence here is enormous perf drain for barely any visual diff
     vec3 rgb = adjustHsl(squaredBase, lerp);
     float blue = hsl2rgb(rgb).b;
     return cos(blue);
 }
 
-vec3 gradient(vec3 pos, float aux) {
+vec3 gradient(vec3 pos, float depth, float time) {
     float epsilon = 0.0001;
     
     vec3 temp = vec3(
-        toGradient(pos + vec3(epsilon, 0, 0), aux),
-        toGradient(pos + vec3(0, epsilon, 0), aux),
-        toGradient(pos + vec3(0, 0, epsilon), aux)
+        toGradient(pos + vec3(epsilon, 0, 0), depth, time),
+        toGradient(pos + vec3(0, epsilon, 0), depth, time),
+        toGradient(pos + vec3(0, 0, epsilon), depth, time)
     );
 
-    return (temp - toGradient(pos, aux)) / epsilon;
+    return (temp - toGradient(pos, depth, time)) / epsilon;
 }
 
 void main() {
-    vec4 drawMask = texture(tex0, texCoordVarying);
+    float depth = texture(tex0, texCoordVarying).r;
     float time = ((float(frameNumber) / 10.0) + 1.) / 25.;
     vec2 uv = (gl_FragCoord.xy/resolution.xy) * vec2(resolution.x / resolution.y, 1);
     vec3 pos = vec3(uv, 0.0);
 
     // vec3 rgb = vec3(toGradient(pos, 1.0));
-    vec3 rgb = gradient(pos, 1.0);
+    vec3 rgb = gradient(pos, depth, sin(fract(time * 0.25)));
     rgb = cos(rgb);
     // rgb = ceil(rgb);
-    rgb = rgb2hsl(rgb);
+    // rgb = rgb2hsl(rgb);
 
-    outputColor = vec4(vec3(rgb.r), 1.0);
+    outputColor = vec4(rgb, 1);
 
     
 }
