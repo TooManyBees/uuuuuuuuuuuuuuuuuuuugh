@@ -125,7 +125,7 @@ vec3 offsetNoise(vec3 pos) {
 
 vec3 turbulence(vec3 pos, float mystery) {
     int octaves = 8;
-    vec3 lucanarity = vec3(2.0) * mystery;
+    vec3 lucanarity = vec3(2.0);
     vec3 gain = vec3(0.5) * mystery;
     vec3 scale = vec3(0.5);
 
@@ -207,12 +207,13 @@ vec3 adjustHsl(vec3 rgb, vec3 shift) {
 void main() {
     vec4 drawMask = texture(tex0, texCoordVarying);
     float time = ((float(frameNumber) / 10.0) + 1.) / 25.;
-    // vec2 uv = (gl_FragCoord.xy/resolution.xy) * vec2(resolution.x / resolution.y, 1);
-    vec2 uv = (gl_FragCoord.xy/vec2(256., 256.)) * vec2(resolution.x / resolution.y, 1);;
+    vec2 uv = (gl_FragCoord.xy/resolution.xy) * vec2(resolution.x / resolution.y, 1);
+    // vec2 uv = (gl_FragCoord.xy/vec2(256., 256.)) * vec2(resolution.x / resolution.y, 1);;
     vec3 pos = vec3(uv, time);
-    vec3 turb = turbulence(pos, drawMask.r);
+    float n = 0.5;
+    vec3 turb = turbulence(pos, n + (drawMask.r * (1-n)));
     vec3 c = naiveHueShift(vec3(-1.4654, 2.9033, 0), turb.r);
-    c = adjustHsl(vec3(uv, time), c);
+    c = adjustHsl(vec3(uv, 0.0), c); // time went in place of 0.0 here
 
     vec3 color = hsl2rgb(vec3(drawMask.r + fract(time * 0.25), 0.5, 0.5));
     float alpha = (sqrt(hsl2rgb(c).g));

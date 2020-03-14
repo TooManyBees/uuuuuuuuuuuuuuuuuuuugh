@@ -72,7 +72,7 @@ void ofApp::draw(){
 	    //drawWires();
 		drawNoise();
 	canvas.end();
-	//ofSetColor(255);
+	ofSetColor(255);
 	canvas.draw(projectionSpace);
 
 	if (recording) {
@@ -81,6 +81,7 @@ void ofApp::draw(){
 		recorder.addFrame(px);
 		ofSetColor(ofColor::red);
 		ofDrawCircle(20, 20, 10);
+		ofSetColor(ofColor::white);
 	}
 }
 
