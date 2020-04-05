@@ -1,7 +1,5 @@
 #include "ofApp.h"
 
-const string SHADER_NAME = "no.frag";
-
 //--------------------------------------------------------------
 void ofApp::setup(){
 	focus = glm::vec2(ofGetWidth() / 2, ofGetHeight()/2);
@@ -12,8 +10,18 @@ void ofApp::setup(){
 	//ofAddListener(recorder.outputFileCompleteEvent, this, )
 	canvas.allocate(ofGetWidth(), ofGetHeight(), GL_RGB);
 
-	noiseShader.load("identity.vert", SHADER_NAME);
-	//noiseShader2.load("identity.vert", "no2.frag");
+	string shaderNames[] = { "no.frag", "no2.frag" };
+
+	for (auto fragmentName : shaderNames) {
+		ofShader s;
+		s.load("identity.vert", fragmentName);
+		_shaders.emplace_back(s, fragmentName);
+	}
+
+	noiseShader = &_shaders[noiseShaderIndex];
+
+	rpsShader.load("identity.vert", "rps.frag");
+	userInput.allocate(WIDTH, HEIGHT, OF_IMAGE_COLOR);
 
 	oniManager.setup(WIDTH, HEIGHT, FPS);
 	depthFrame.allocate(WIDTH, HEIGHT, OF_IMAGE_GRAYSCALE);
@@ -22,8 +30,8 @@ void ofApp::setup(){
 void ofApp::reloadShaders() {
 	if (shadersDirty) {
 		ofLogNotice() << "Reloading shader." << endl;
-		noiseShader.load("identity.vert", SHADER_NAME);
-		//noiseShader2.load("identity.vert", "no2.frag");
+		noiseShader->reload();
+		//rpsShader.load("identity.vert", "rps.frag");
 		GLint err = glGetError();
 		if (err != GL_NO_ERROR) {
 			ofLogNotice() << "Shader failed to compile:" << endl << err << endl;
@@ -56,20 +64,19 @@ void ofApp::drawWires() {
 
 void ofApp::drawNoise() {
 	ofBackground(0);
-	noiseShader.begin();
-		noiseShader.setUniform1i("frameNumber", ofGetFrameNum());
-		noiseShader.setUniform2f("resolution", WIDTH, HEIGHT);
-		noiseShader.setUniform1f("timetime", ofGetElapsedTimeMillis());
+	noiseShader->actualShader.begin();
+		noiseShader->actualShader.setUniform1i("frameNumber", ofGetFrameNum());
+		noiseShader->actualShader.setUniform2f("resolution", WIDTH, HEIGHT);
+		noiseShader->actualShader.setUniform1f("timetime", ofGetElapsedTimeMillis());
 		ofSetColor(255);
-		//ofDrawRectangle(canvasSpace);
 		depthFrame.draw(canvasSpace);
-	noiseShader.end();
+	noiseShader->actualShader.end();
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
 	canvas.begin();
-	    //drawWires();
+		//drawWires();
 		drawNoise();
 	canvas.end();
 	ofSetColor(255);
@@ -92,6 +99,10 @@ void ofApp::keyPressed(int key){
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
+	if (key == '\t') {
+		noiseShaderIndex = (noiseShaderIndex + 1) % _shaders.size();
+		noiseShader = &_shaders[noiseShaderIndex];
+	}
 	if (key == 'r') {
 		if (!recording) {
 			recorder.startThread(false);

@@ -7,6 +7,15 @@
 #include "NiTE.h"
 #include "OniManager.hpp"
 
+struct Shader {
+	ofShader actualShader;
+	string fragmentName;
+	Shader(ofShader s, string n) : actualShader(s), fragmentName(n) {}
+	void reload() {
+		this->actualShader.load("identity.vert", this->fragmentName);
+	}
+};
+
 class ofApp : public ofBaseApp{
 
 	public:
@@ -40,8 +49,9 @@ class ofApp : public ofBaseApp{
 		void drawWires();
 
 		void drawNoise();
-		ofShader noiseShader;
-		ofShader noiseShader2;
+		vector<Shader> _shaders;
+		Shader* noiseShader = NULL;
+		size_t noiseShaderIndex;
 
 		ofxImageSequenceRecorder recorder;
 		bool recording = false;
