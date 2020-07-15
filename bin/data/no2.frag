@@ -1,11 +1,16 @@
 #version 150
 
-uniform sampler2DRect tex0;
+uniform sampler2DRect depthFrame;
+uniform sampler2DRect userFrame;
 uniform int frameNumber;
 uniform vec2 resolution;
 uniform float timetime;
+uniform float userTimeScale;
+uniform float timeScale;
 in vec2 texCoordVarying;
 out vec4 outputColor;
+
+float user = texture(userFrame, texCoordVarying).r;
 
 //http://webstaff.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf
 //simplex pretty much 99% copied from there
@@ -233,14 +238,21 @@ vec3 gradient(vec3 pos, float depth, float time) {
     return (temp - toGradient(pos, depth, time)) / epsilon;
 }
 
+float boostUser = 1.5;
+float highlightUsers(float depth) {
+    float bump = step(0.5, user) * (1.0 - depth) * boostUser;
+    return depth + bump;
+}
+
 void main() {
-    float depth = texture(tex0, texCoordVarying).r;
-    float time = ((float(frameNumber) / 10.0) + 1.) / 25.;
+    float depth = texture(depthFrame, texCoordVarying).r;
+    // depth = highlightUsers(depth);
+    float time = float(frameNumber) / 1000.;
     vec2 uv = (gl_FragCoord.xy/resolution.xy) * vec2(resolution.x / resolution.y, 1);
     vec3 pos = vec3(uv, 0.0);
 
-    // vec3 rgb = vec3(toGradient(pos, 1.0));
-    vec3 rgb = gradient(pos, depth, sin(fract(time * 0.25)));
+    time *= (step(0.5, user) * userTimeScale) + (step(user, 0.5) * timeScale);
+    vec3 rgb = gradient(pos, depth, sin(fract(time)));
     rgb = cos(rgb);
     // rgb = ceil(rgb);
     // rgb = rgb2hsl(rgb);

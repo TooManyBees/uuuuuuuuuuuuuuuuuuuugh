@@ -43,6 +43,7 @@ class ofApp : public ofBaseApp{
 
 		OniManager oniManager;
 		ofImage depthFrame;
+		ofImage userFrame;
 
 		glm::vec2 focus;
 		Wires wires;

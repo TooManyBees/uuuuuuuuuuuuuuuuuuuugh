@@ -20,11 +20,14 @@ void ofApp::setup(){
 
 	noiseShader = &_shaders[noiseShaderIndex];
 
-	rpsShader.load("identity.vert", "rps.frag");
-	userInput.allocate(WIDTH, HEIGHT, OF_IMAGE_COLOR);
+	// rpsShader.load("identity.vert", "rps.frag");
+	// userInput.allocate(WIDTH, HEIGHT, OF_IMAGE_COLOR);
 
 	oniManager.setup(WIDTH, HEIGHT, FPS);
 	depthFrame.allocate(WIDTH, HEIGHT, OF_IMAGE_GRAYSCALE);
+	depthFrame.setColor(0);
+	userFrame.allocate(WIDTH, HEIGHT, OF_IMAGE_GRAYSCALE);
+	userFrame.setColor(0);
 }
 
 void ofApp::reloadShaders() {
@@ -44,6 +47,7 @@ void ofApp::reloadShaders() {
 void ofApp::update(){
 	focus = glm::vec2(ofGetMouseX(), ofGetMouseY());
 	oniManager.getDepthFrame(&depthFrame);
+	oniManager.getUserFrame(&userFrame);
 	reloadShaders();
 	if (needsResize) sizeProjectionSpace();
 }
@@ -68,6 +72,9 @@ void ofApp::drawNoise() {
 		noiseShader->actualShader.setUniform1i("frameNumber", ofGetFrameNum());
 		noiseShader->actualShader.setUniform2f("resolution", WIDTH, HEIGHT);
 		noiseShader->actualShader.setUniform1f("timetime", ofGetElapsedTimeMillis());
+		noiseShader->actualShader.setUniformTexture("userFrame", userFrame.getTexture(), 1);
+		noiseShader->actualShader.setUniform1f("timeScale", 1.0);
+		noiseShader->actualShader.setUniform1f("userTimeScale", 0.05);
 		ofSetColor(255);
 		depthFrame.draw(canvasSpace);
 	noiseShader->actualShader.end();
